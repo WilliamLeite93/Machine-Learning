@@ -1,0 +1,28 @@
+# Ambientes virtuais Python
+.venv/
+venv/
+ENV/
+env/
+.env
+
+# Byte-code e cache
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+
+# Arquivos de log/servidor
+*.log
+*.err
+
+# Windows
+Desktop.ini
+Thumbs.db
+
+# Editores / IDE
+.vscode/
+.idea/
+
+# Dataset pesado (109MB): excede o limite do GitHub (100MB)
+# e não é necessário - o model.pkl já está treinado e versionado.
+smoking_driking_dataset_Ver01.csv

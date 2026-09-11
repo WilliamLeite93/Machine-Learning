@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Triagem Esportiva &middot; Saúde e Hábitos</title>
+  <style>
+    :root {
+      --primary: #4338ca;
+      --primary-dark: #3730a3;
+      --primary-soft: #eef2ff;
+      --bg: #f4f6fb;
+      --surface: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --muted: #64748b;
+      --danger: #dc2626;
+      --danger-soft: #fef2f2;
+      --success: #059669;
+      --success-soft: #ecfdf5;
+      --warn: #d97706;
+      --radius: 14px;
+      --shadow: 0 1px 2px rgba(15, 23, 42, .06), 0 8px 24px rgba(15, 23, 42, .08);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: "Segoe UI", -apple-system, system-ui, Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 24px 16px 64px;
+    }
+    .container { max-width: 980px; margin: 0 auto; }
+
+    /* ===== Header ===== */
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 12px; margin-bottom: 20px;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-badge {
+      width: 44px; height: 44px; border-radius: 12px;
+      background: linear-gradient(135deg, var(--primary), #7c3aed);
+      display: grid; place-items: center; color: #fff;
+      box-shadow: 0 6px 16px rgba(67, 56, 202, .35);
+    }
+    .brand-badge svg { width: 24px; height: 24px; }
+    .brand h1 { font-size: 1.15rem; font-weight: 700; letter-spacing: -.01em; }
+    .brand p { font-size: .82rem; color: var(--muted); }
+    .tag {
+      font-size: .72rem; font-weight: 600; color: var(--primary);
+      background: var(--primary-soft); border: 1px solid #e0e7ff;
+      padding: 6px 12px; border-radius: 999px; letter-spacing: .02em;
+    }
+
+    .mode-hint { font-size: .74rem; color: var(--muted); margin-top: 8px; }
+
+    /* ===== Cards / seções ===== */
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); box-shadow: var(--shadow);
+      margin-bottom: 20px;
+    }
+    .card-header {
+      display: flex; align-items: center; gap: 12px;
+      padding: 18px 22px 0;
+    }
+    .section-icon {
+      width: 34px; height: 34px; border-radius: 10px; flex: none;
+      background: var(--primary-soft); color: var(--primary);
+      display: grid; place-items: center;
+    }
+    .section-icon svg { width: 18px; height: 18px; }
+    .section-title { font-size: .95rem; font-weight: 700; }
+    .section-desc { font-size: .78rem; color: var(--muted); margin-top: 2px; }
+    .card-body { padding: 18px 22px 22px; }
+
+    /* ===== Campos ===== */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 16px;
+    }
+    .field { margin-top: 16px; }
+    .field label {
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: .78rem; font-weight: 600; color: #334155; margin-bottom: 6px;
+    }
+    .field label .req { color: var(--danger); font-weight: 700; }
+    .control { position: relative; }
+    .control input, .control select {
+      width: 100%; padding: 10px 12px; font-size: .92rem;
+      border: 1.5px solid var(--border); border-radius: 10px;
+      background: #fff; color: var(--text); transition: border-color .15s, box-shadow .15s;
+      appearance: none; -webkit-appearance: none;
+    }
+    .control select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px;
+      cursor: pointer;
+    }
+    .control input:focus, .control select:focus {
+      outline: none; border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(67, 56, 202, .14);
+    }
+    .control input.invalid {
+      border-color: var(--danger);
+      box-shadow: 0 0 0 3px rgba(220, 38, 38, .12);
+    }
+    .unit {
+      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+      font-size: .72rem; color: var(--muted); pointer-events: none;
+      background: var(--bg); padding: 2px 6px; border-radius: 6px;
+    }
+    .control input { padding-right: 56px; }
+    .control select ~ .unit { display: none; }
+    .field-msg { display: none; font-size: .72rem; color: var(--danger); margin-top: 5px; }
+
+    /* ===== Barra de progresso ===== */
+    .progress-card .card-body { padding-top: 18px; }
+    .progress-row { display: flex; align-items: center; gap: 12px; }
+    .bar { flex: 1; height: 8px; border-radius: 999px; background: #e2e8f0; overflow: hidden; }
+    .bar-fill {
+      height: 100%; width: 0; border-radius: 999px;
+      background: linear-gradient(90deg, var(--primary), #7c3aed);
+      transition: width .3s ease;
+    }
+    .progress-label { font-size: .76rem; font-weight: 600; color: var(--muted); min-width: 128px; }
+
+    /* ===== Acoes ===== */
+    .actions { display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn {
+      flex: 1; min-width: 170px; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 12px 18px; border-radius: 11px; font-size: .95rem; font-weight: 600;
+      cursor: pointer; border: none; transition: filter .15s, transform .05s;
+      font-family: inherit;
+    }
+    .btn:active { transform: translateY(1px); }
+    .btn-primary { background: var(--primary); color: #fff; box-shadow: 0 6px 16px rgba(67, 56, 202, .3); }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-ghost { background: #fff; color: #334155; border: 1.5px solid var(--border); }
+    .btn-ghost:hover { background: #f8fafc; }
+    .btn svg { width: 17px; height: 17px; }
+    button:disabled { opacity: .65; cursor: not-allowed; }
+
+    /* ===== Preenchimento automatico de teste ===== */
+    .fill-bar {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--border);
+    }
+    .fill-label { font-size: .78rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+    .fill-bar .btn-fill {
+      flex: none; min-width: 0; display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 14px; font-size: .82rem; font-weight: 600; border-radius: 9px;
+      cursor: pointer; border: 1.5px solid #e0e7ff; background: var(--primary-soft); color: var(--primary);
+      transition: filter .15s;
+    }
+    .fill-bar .btn-fill:hover { filter: brightness(.97); }
+    .spinner {
+      width: 16px; height: 16px; border: 2.5px solid rgba(255, 255, 255, .35);
+      border-top-color: #fff; border-radius: 50%;
+      animation: spin .7s linear infinite; display: none;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ===== Resultado ===== */
+    #result { display: none; }
+    .verdict { display: flex; gap: 16px; align-items: flex-start; }
+    .verdict-icon {
+      width: 46px; height: 46px; border-radius: 12px; flex: none;
+      display: grid; place-items: center;
+    }
+    .verdict-icon svg { width: 24px; height: 24px; }
+    .verdict.risk { border: 1.5px solid #fecaca; background: var(--danger-soft); }
+    .verdict.risk .verdict-icon { background: var(--danger); color: #fff; }
+    .verdict.risk .verdict-label { color: var(--danger); }
+    .verdict.safe { border: 1.5px solid #a7f3d0; background: var(--success-soft); }
+    .verdict.safe .verdict-icon { background: var(--success); color: #fff; }
+    .verdict.safe .verdict-label { color: var(--success); }
+    .verdict.moderate { border: 1.5px solid #fde68a; background: #fffbeb; }
+    .verdict.moderate .verdict-icon { background: #f59e0b; color: #fff; }
+    .verdict.moderate .verdict-label { color: #b45309; }
+    .verdict-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .verdict-label { font-size: 1.02rem; font-weight: 700; }
+    .badge {
+      font-size: .74rem; font-weight: 700; letter-spacing: .04em;
+      padding: 3px 10px; border-radius: 999px;
+    }
+    .badge.risk { background: var(--danger); color: #fff; }
+    .badge.safe { background: var(--success); color: #fff; }
+    .badge.moderate { background: #f59e0b; color: #fff; }
+    .verdict-msg { font-size: .86rem; color: #475569; margin-top: 6px; }
+    .prob-wrap { display: flex; align-items: center; gap: 10px; margin-top: 14px; }
+    .prob-bar { flex: 1; height: 8px; border-radius: 999px; background: #e2e8f0; overflow: hidden; }
+    .prob-fill { height: 100%; width: 0; border-radius: 999px; transition: width .6s ease; }
+    .prob-fill.risk { background: linear-gradient(90deg, #f59e0b, var(--danger)); }
+    .prob-fill.safe { background: linear-gradient(90deg, #34d399, var(--success)); }
+    .prob-fill.moderate { background: linear-gradient(90deg, #fbbf24, #f59e0b); }
+    .prob-text { font-size: .78rem; font-weight: 600; color: var(--muted); min-width: 120px; text-align: right; }
+
+    /* ===== Rodape ===== */
+    .footer { text-align: center; font-size: .74rem; color: var(--muted); margin-top: 26px; line-height: 1.7; }
+    .footer strong { color: #475569; }
+
+    /* ===== Nota sobre a acurácia ===== */
+    .info-note {
+      display: flex; gap: 12px; align-items: flex-start;
+      background: var(--primary-soft); border: 1px solid #e0e7ff;
+      border-radius: var(--radius); padding: 14px 16px; margin-top: 20px;
+    }
+    .info-note svg { width: 20px; height: 20px; color: var(--primary); flex: none; margin-top: 1px; }
+    .info-note b { color: var(--text); }
+    .info-note .num {
+      font-weight: 800; color: var(--primary);
+      background: #fff; border-radius: 6px; padding: 1px 7px;
+      font-size: .86em;
+    }
+
+    /* ===== Erro global ===== */
+    #api-error {
+      display: none; margin-top: 20px; padding: 13px 16px; border-radius: 11px;
+      background: var(--danger-soft); border: 1.5px solid #fecaca; color: var(--danger);
+      font-size: .85rem; font-weight: 600;
+    }
+
+    @media (max-width: 560px) {
+      .grid { grid-template-columns: 1fr; }
+      .actions { flex-direction: column; }
+      .btn { width: 100%; }
+      body { padding: 16px 12px 48px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- Header -->
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+          </svg>
+        </div>
+        <div>
+          <h1>Triagem Esportiva de Atletas</h1>
+          <p>Avaliação de exames e hábitos na contratação de atletas</p>
+        </div>
+      </div>
+      <span class="tag">Esportes &amp; Performance</span>
+    </header>
+    <p class="mode-hint">
+      Triagem para contratação de atletas: exames de saúde e hábitos indicam possíveis
+      indícios de consumo de álcool. Critério rigoroso - nível <strong>CRITICO</strong>
+      impede a contratação até avaliação médica esportiva.
+    </p>
+
+    <!-- Progresso -->
+    <section class="card progress-card">
+      <div class="card-body">
+        <div class="progress-row">
+          <div class="bar"><div class="bar-fill" id="bar-fill"></div></div>
+          <span class="progress-label" id="progress-label">0 de 14 campos</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Formulario -->
+    <form id="form">
+      <!-- Seção 1: Hábitos -->
+      <section class="card">
+        <div class="card-header">
+          <div class="section-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 12.5A4 4 0 0 0 15 21a5 5 0 0 0 3 1 4 4 0 0 0 1.5-7.5Z"/><circle cx="8.5" cy="14.5" r="1.5"/><path d="M20 3v4"/><path d="M22 5h-4"/></svg>
+          </div>
+          <div>
+            <div class="section-title">Hábitos declarados</div>
+            <div class="section-desc">Informações declaradas pelo atleta na anamnese</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="grid">
+            <div class="field">
+              <label for="SMK_stat_type_cd">Status de tabagismo <span class="req">*</span></label>
+              <div class="control">
+                <select id="SMK_stat_type_cd" name="SMK_stat_type_cd">
+                  <option value="1" selected>Nunca fumou</option>
+                  <option value="2">Ex-fumante</option>
+                  <option value="3">Fumante</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Seção 2: Pressão e glicemia -->
+      <section class="card">
+        <div class="card-header">
+          <div class="section-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14v-3"/><path d="M11 14v-6"/><path d="M15 14v-4"/><path d="M19 14v-8"/></svg>
+          </div>
+          <div>
+            <div class="section-title">Pressão e glicemia</div>
+            <div class="section-desc">Valores de pressão arterial e glicose em jejum</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="grid">
+            <div class="field">
+              <label for="SBP">Pressão sistólica <span class="req">*</span></label>
+              <div class="control">
+                <input id="SBP" name="SBP" type="number" step="any" min="0" required><span class="unit">mmHg</span>
+              </div>
+              <div class="field-msg">Campo obrigatório</div>
+            </div>
+            <div class="field">
+              <label for="DBP">Pressão diastólica <span class="req">*</span></label>
+              <div class="control">
+                <input id="DBP" name="DBP" type="number" step="any" min="0" required><span class="unit">mmHg</span>
+              </div>
+              <div class="field-msg">Campo obrigatório</div>
+            </div>
+            <div class="field">
+              <label for="BLDS">Glicose em jejum <span class="req">*</span></label>
+              <div class="control">
+                <input id="BLDS" name="BLDS" type="number" step="any" min="0" required><span class="unit">mg/dL</span>
+              </div>
+              <div class="field-msg">Campo obrigatório</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Seção 3: Perfil lipídico -->
+      <section class="card">
+        <div class="card-header">
+          <div class="section-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          </div>
+          <div>
+            <div class="section-title">Perfil lipídico</div>
+            <div class="section-desc">Colesteróis e triglicerídeos (mg/dL)</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="grid">
+            <div class="field">
+              <label for="tot_chole">Colesterol total <span class="req">*</span></label>
+              <div class="control">
+                <input id="tot_chole" name="tot_chole" type="number" step="any" min="0" required><span class="unit">mg/dL</span>
+              </div>
+              <div class="field-msg">Campo obrigatório</div>
+            </div>
+            <div class="field">
+              <label for="HDL_chole">Colesterol HDL <span class="req">*</span></label>
+              <div class="control">
+                <input id="HDL_chole" name="HDL_chole" type="number" step="any" min="0" required><span class="unit">mg/dL</span>
+              </div>
+              <div class="field-msg">Campo obrigatório</div>
+            </div>
+            <div class="field">
+              <label for="LDL_chole">Colesterol LDL <span class="req">*</span></label>
+              <div class="control">
+                <input id="LDL_chole" name="LDL_chole" type="number" step="any" min="0" required><span class="unit">mg/dL</span>
+              </div>
+              <div class="field-msg">Campo obrigatório</div>
+            </div>
+            <div class="field">
+              <label for="triglyceride">Triglicerídeos <span class="req">*</span></label>
+              <div class="control">
+                <input id="triglyceride" name="triglyceride" type="number" step="any" min="0" required><span class="unit">mg/dL</span>
+              </div>
+              <div class="field-msg">Campo obrigatório</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Seção 4: Sangue e função renal -->
+      <section class="card">
+        <div class="card-header">
+          <div class="section-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69 5 9.2V22h14V9.2Z"/><path d="M9 14h6"/></svg>
+          </div>
+          <div>
+            <div class="section-title">Sangue e função renal</div>
+            <div class="section-desc">Hemograma e marcadores renais</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="grid">
+            <div class="field">
+              <label for="hemoglobin">Hemoglobina <span class="req">*</span></label>
+              <div class="control">
+                <input id="hemoglobin" name="hemoglobin" type="number" step="any" min="0" required><span class="unit">g/dL</span>
+              </div>
+              <div class="field-msg">Campo obrigatório</div>
+            </div>
+            <div class="field">
+              <label for="urine_protein">Proteína na urina <span class="req">*</span></label>
+              <div class="control">
+                <input id="urine_protein" name="urine_protein" type="number" step="any" min="0" required><span class="unit">mg/dL</span>
+              </div>
+              <div class="field-msg">Campo obrigatório</div>
+            </div>
+            <div class="field">
+              <label for="serum_creatinine">Creatinina sérica <span class="req">*</span></label>
+              <div class="control">
+                <input id="serum_creatinine" name="serum_creatinine" type="number" step="any" min="0" required><span class="unit">mg/dL</span>
+              </div>
+              <div class="field-msg">Campo obrigatório</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Seção 5: Função hepática -->
+      <section class="card">
+        <div class="card-header">
+          <div class="section-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21c-5-3.5-8-7-8-11a4 4 0 0 1 8-2 4 4 0 0 1 8 2c0 4-3 7.5-8 11Z"/></svg>
+          </div>
+          <div>
+            <div class="section-title">Função hepática</div>
+            <div class="section-desc">Enzimas hepáticas: marcadores-chave associados ao álcool</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="grid">
+            <div class="field">
+              <label for="SGOT_AST">AST (TGO) <span class="req">*</span></label>
+              <div class="control">
+                <input id="SGOT_AST" name="SGOT_AST" type="number" step="any" min="0" required><span class="unit">U/L</span>
+              </div>
+              <div class="field-msg">Campo obrigatório</div>
+            </div>
+            <div class="field">
+              <label for="SGOT_ALT">ALT (TGP) <span class="req">*</span></label>
+              <div class="control">
+                <input id="SGOT_ALT" name="SGOT_ALT" type="number" step="any" min="0" required><span class="unit">U/L</span>
+              </div>
+              <div class="field-msg">Campo obrigatório</div>
+            </div>
+            <div class="field">
+              <label for="gamma_GTP">Gama-GT <span class="req">*</span></label>
+              <div class="control">
+                <input id="gamma_GTP" name="gamma_GTP" type="number" step="any" min="0" required><span class="unit">U/L</span>
+              </div>
+              <div class="field-msg">Campo obrigatório</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Acoes -->
+      <section class="card">
+        <div class="card-body">
+          <div class="actions">
+            <button type="submit" id="btn-submit" class="btn btn-primary">
+              <span class="spinner" id="spinner"></span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><path d="M20 6v14a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6"/><path d="M16 3H8v4h8z"/></svg>
+              Avaliar Candidato
+            </button>
+            <button type="button" id="btn-reset" class="btn btn-ghost">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+              Limpar Formulario
+            </button>
+          </div>
+          <div class="fill-bar">
+            <span class="fill-label">Teste rápido:</span>
+            <button type="button" class="btn-fill" data-test="risk">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+              Perfil com indício
+            </button>
+            <button type="button" class="btn-fill" data-test="safe">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+              Perfil sem indício
+            </button>
+          </div>
+        </div>
+      </section>
+    </form>
+
+    <!-- Nota sobre a acurácia -->
+    <div class="info-note">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>
+      </svg>
+      <p>
+        <b>Sobre a acurácia:</b> o modelo atual usa <span class="num">14</span> de um total de
+        <span class="num">23</span> colunas do arquivo completo do dataset, portanto a acurácia
+        fica em <span class="num">71.5%</span> (com todas as 23 colunas seria de
+        <span class="num">74.0%</span>). As 9 colunas removidas <b>por questões éticas e legais</b>
+        (sexo, idade, altura, peso, medidas corporais e exames sensoriais) não podem ser usadas
+        nesta aplicação de contratação de atletas.
+      </p>
+    </div>
+
+    <!-- Erro de API -->
+    <div id="api-error"></div>
+
+    <!-- Resultado -->
+    <section class="card" id="result">
+      <div class="card-body">
+        <div class="verdict" id="verdict">
+          <div class="verdict-icon" id="verdict-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+          </div>
+          <div style="flex:1">
+            <div class="verdict-head">
+              <span class="verdict-label" id="verdict-label"></span>
+              <span class="badge" id="verdict-badge"></span>
+            </div>
+            <div class="verdict-msg" id="verdict-msg"></div>
+            <div class="prob-wrap">
+              <div class="prob-bar"><div class="prob-fill" id="prob-fill"></div></div>
+              <span class="prob-text" id="prob-text"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const API_URL = 'http://localhost:8000/predict';
+
+    const VERDICT_LABELS = {
+      SEGURO: 'Apto para atividade esportiva',
+      MODERADO: 'Atenção - avaliação com médico do esporte recomendada',
+      CRITICO: 'Indício significativo - contratação impedida até avaliação'
+    };
+    const TEST_PROFILES = {
+      risk: { SBP: 130, DBP: 88, BLDS: 101, tot_chole: 214, HDL_chole: 50, LDL_chole: 125, triglyceride: 195, hemoglobin: 16.7, urine_protein: 1, serum_creatinine: 1.3, SGOT_AST: 32, SGOT_ALT: 22, gamma_GTP: 59, SMK_stat_type_cd: 1 },
+      safe: { SBP: 110, DBP: 60, BLDS: 108, tot_chole: 135, HDL_chole: 51, LDL_chole: 76, triglyceride: 40, hemoglobin: 12.2, urine_protein: 1, serum_creatinine: 0.6, SGOT_AST: 30, SGOT_ALT: 31, gamma_GTP: 15, SMK_stat_type_cd: 1 }
+    };
+    const FIELDS = ['SMK_stat_type_cd', 'SBP', 'DBP', 'BLDS', 'tot_chole', 'HDL_chole',
+      'LDL_chole', 'triglyceride', 'hemoglobin', 'urine_protein', 'serum_creatinine',
+      'SGOT_AST', 'SGOT_ALT', 'gamma_GTP'];
+
+    const barFill = document.getElementById('bar-fill');
+    const progressLabel = document.getElementById('progress-label');
+    const resultBox = document.getElementById('result');
+    const verdict = document.getElementById('verdict');
+    const verdictLabel = document.getElementById('verdict-label');
+    const verdictBadge = document.getElementById('verdict-badge');
+    const verdictMsg = document.getElementById('verdict-msg');
+    const probFill = document.getElementById('prob-fill');
+    const probText = document.getElementById('prob-text');
+    const spy = document.getElementById('spinner');
+    const apiError = document.getElementById('api-error');
+    const form = document.getElementById('form');
+
+    function countFilled() {
+      let n = 0;
+      FIELDS.forEach(name => {
+        const el = form.querySelector('[name="' + name + '"]');
+        if (el && el.value.trim() !== '') n++;
+      });
+      return n;
+    }
+
+    function updateProgress() {
+      const filled = countFilled();
+      const pct = Math.round((filled / FIELDS.length) * 100);
+      barFill.style.width = pct + '%';
+      progressLabel.textContent = filled + ' de ' + FIELDS.length + ' campos';
+    }
+
+    FIELDS.forEach(name => {
+      const el = form.querySelector('[name="' + name + '"]');
+      if (el) el.addEventListener('input', () => { el.classList.remove('invalid'); updateProgress(); });
+    });
+
+    function buildPayload() {
+      const payload = { context: 'sport' };
+      FIELDS.forEach(name => {
+        const el = form.querySelector('[name="' + name + '"]');
+        const raw = el.value.trim();
+        const num = Number(raw);
+        payload[name] = (name === 'SMK_stat_type_cd' || isNaN(num)) ? raw : num;
+      });
+      return payload;
+    }
+
+    function focusFirstMissing() {
+      for (const name of FIELDS) {
+        const el = form.querySelector('[name="' + name + '"]');
+        if (el && el.value.trim() === '') {
+          el.classList.add('invalid');
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          el.focus();
+          const msg = el.closest('.field').querySelector('.field-msg');
+          if (msg) msg.style.display = 'block';
+          setTimeout(() => { if (msg) msg.style.display = 'none'; }, 4000);
+          return;
+        }
+      }
+    }
+
+    function setLoading(on) {
+      document.getElementById('btn-submit').disabled = on;
+      document.getElementById('btn-reset').disabled = on;
+      spy.style.display = on ? 'block' : 'none';
+    }
+
+    function showVerdict(data) {
+      const level = data.risk_level || (data.risk_profile ? 'CRITICO' : 'SEGURO');
+      const state = level === 'SEGURO' ? 'safe' : (level === 'MODERADO' ? 'moderate' : 'risk');
+      verdict.className = 'verdict ' + state;
+      verdictLabel.textContent = VERDICT_LABELS[level] || level;
+      verdictBadge.textContent = data.prediction;
+      verdictBadge.className = 'badge ' + state;
+      verdictMsg.textContent = data.message;
+      probFill.className = 'prob-fill ' + state;
+      probFill.style.width = (data.probability * 100) + '%';
+      probText.textContent = 'Prob. ' +
+        (data.probability * 100).toFixed(1) + '%';
+      resultBox.style.display = 'block';
+      resultBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      apiError.style.display = 'none';
+
+      if (countFilled() < FIELDS.length) { focusFirstMissing(); return; }
+
+      setLoading(true);
+      resultBox.style.display = 'none';
+
+      try {
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(buildPayload())
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+          const detail = (data.detail && typeof data.detail === 'string')
+            ? data.detail
+            : 'Erro inesperado na API.';
+          throw new Error(detail);
+        }
+        showVerdict(data);
+      } catch (error) {
+        apiError.textContent = 'Falha ao comunicar com a API: ' + error.message;
+        apiError.style.display = 'block';
+      } finally {
+        setLoading(false);
+      }
+    });
+
+    document.getElementById('btn-reset').addEventListener('click', () => {
+      form.reset();
+      form.querySelector('[name="SMK_stat_type_cd"]').value = '1';
+      document.querySelectorAll('.control input').forEach(i => i.classList.remove('invalid'));
+      resultBox.style.display = 'none';
+      apiError.style.display = 'none';
+      updateProgress();
+    });
+
+    document.querySelectorAll('.btn-fill').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const values = TEST_PROFILES[btn.dataset.test];
+        FIELDS.forEach(name => {
+          const el = form.querySelector('[name="' + name + '"]');
+          if (el) { el.value = String(values[name]); el.classList.remove('invalid'); }
+        });
+        resultBox.style.display = 'none';
+        apiError.style.display = 'none';
+        updateProgress();
+      });
+    });
+
+    updateProgress();
+  </script>
+</body>
+</html>

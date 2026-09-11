@@ -1,0 +1,12 @@
+.git
+.gitignore
+.venv
+venv
+env
+__pycache__
+*.pyc
+*.log
+*.err
+DESKTOP.ini
+
+smoking_driking_dataset_Ver01.csv
