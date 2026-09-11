@@ -125,9 +125,3 @@ por exceder o limite do GitHub — o modelo treinado já está versionado.
 A pequena perda (≈2.6pp) é o custo de remover colunas sensíveis (`sex`, `age`, medidas
 antropométricas e exames sensoriais), mantendo o sistema adequado e legal para uso em
 contratação de atletas.
-
-## Limitações e ética
-
-- Modelo **não é diagnóstico** médico e não deve ser usado como critério único de decisão;
-- Colunas sensíveis foram removidas para reduzir risco de discriminação (LGPD);
-- O sistema apoia a triagem/anamnese, cabendo a decisão final a profissionais capacitados.
