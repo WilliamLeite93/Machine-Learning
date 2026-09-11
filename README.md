@@ -5,14 +5,6 @@ se há **indício de consumo de álcool** (`DRK_YN`). O resultado apoia a **cont
 quanto maior o indício, mais rigorosa é a recomendação, podendo impedir a contratação até
 avaliação complementar com médico do esporte.
 
-Fluxo implementado (segue a lógica do projeto de referência):
-
-```
-Dataset → preparação dos dados → treinamento do modelo → avaliação → modelo treinado → API → aplicação
-```
-
----
-
 ## 1. Qual dataset foi escolhido e qual problema ele representa?
 
 **Dataset:** `smoking_driking_dataset_Ver01.csv` (dados de exames de saúde e hábitos de
@@ -75,8 +67,7 @@ esportivo (ex.: "indício significativo → contratação impedida até avaliaç
 
 ## 7. Como seria a interface ou experiência de uso dessa solução?
 
-Uma página web (`index.html`) com formulário dos 14 exames, consumindo a API via JavaScript
-`fetch()`. A comissão técnica preenche os valores, clica em **Avaliar Candidato** e recebe um
+Uma página web com formulário dos 14 exames, consumindo uma API. A comissão técnica preenche os valores, clica em **Avaliar Candidato** e recebe um
 painel com veredito em 3 cores: **verde** (apto), **âmbar** (avaliação recomendada) e
 **vermelho** (indício impedido até avaliação), com a probabilidade em barra visual.
 Experiência simples: exames do atleta → veredito em segundos.
