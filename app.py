@@ -10,7 +10,6 @@ from pydantic import BaseModel, Field
 
 MODEL_PATH = os.path.join(os.path.dirname(__file__), "model.pkl")
 
-# Ordem das features na predição (deve coincidir com FEATURES do train_model.py).
 FEATURES = [
     "SBP",
     "DBP",
@@ -31,7 +30,6 @@ FEATURES = [
 model_data = None
 
 class Context(str, Enum):
-    """Modo de uso da triagem. Padrão: contratação de atletas."""
     rh = "rh"
     sport = "sport"
 
@@ -93,15 +91,6 @@ def to_input_vector(payload: CandidateIn) -> list:
 
 
 def classify_risk(probability: float, context: Context):
-    """Faixas de risco e mensagens por modo de uso.
-
-    Faixas (iguais nos dois contextos):
-      SEGURO    p < 35%
-      MODERADO  35% <= p < 60%
-      CRITICO   p >= 60%
-    O critério de alerta (risk_profile) é mais rigoroso para atletas:
-    no modo 'sport', até o nível MODERADO já gera atenção.
-    """
     if probability < 0.35:
         level, risk = "SEGURO", False
     elif probability < 0.60:
@@ -133,17 +122,17 @@ def predict(payload: CandidateIn) -> dict:
     model = model_data
     vector = to_input_vector(payload)
 
-    predicted = int(model.predict([vector])[0])          # 1 -> Y (bebe), 0 -> N
-    probability = float(model.predict_proba([vector])[0][1])  # prob. da classe Y
+    predicted = int(model.predict([vector])[0])        
+    probability = float(model.predict_proba([vector])[0][1]) 
 
     label = "Y" if predicted == 1 else "N"
     level, risk, message = classify_risk(probability, payload.context)
 
     return {
-        "prediction": label,                 # Y ou N (indício de consumo de álcool)
+        "prediction": label,                
         "context": payload.context.value,
-        "risk_level": level,                 # SEGURO / MODERADO / CRITICO
-        "risk_profile": risk,                # alerta gerado (mais rígido p/ atletas)
+        "risk_level": level,                
+        "risk_profile": risk,               
         "probability": round(probability, 4),
         "message": message,
     }
