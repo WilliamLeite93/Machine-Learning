@@ -5,14 +5,6 @@ se há **indício de consumo de álcool** (`DRK_YN`). O resultado apoia a **cont
 quanto maior o indício, mais rigorosa é a recomendação, podendo impedir a contratação até
 avaliação complementar com médico do esporte.
 
-Fluxo implementado (segue a lógica do projeto de referência):
-
-```
-Dataset → preparação dos dados → treinamento do modelo → avaliação → modelo treinado → API → aplicação
-```
-
----
-
 ## 1. Qual dataset foi escolhido e qual problema ele representa?
 
 **Dataset:** `smoking_driking_dataset_Ver01.csv` (dados de exames de saúde e hábitos de
@@ -75,8 +67,7 @@ esportivo (ex.: "indício significativo → contratação impedida até avaliaç
 
 ## 7. Como seria a interface ou experiência de uso dessa solução?
 
-Uma página web (`index.html`) com formulário dos 14 exames, consumindo a API via JavaScript
-`fetch()`. A comissão técnica preenche os valores, clica em **Avaliar Candidato** e recebe um
+Uma página web com formulário dos 14 exames, consumindo uma API. A comissão técnica preenche os valores, clica em **Avaliar Candidato** e recebe um
 painel com veredito em 3 cores: **verde** (apto), **âmbar** (avaliação recomendada) e
 **vermelho** (indício impedido até avaliação), com a probabilidade em barra visual.
 Experiência simples: exames do atleta → veredito em segundos.
@@ -115,28 +106,3 @@ Na página há botões **"Teste rápido"** (perfil com/sem indício) que preench
 os 14 campos automaticamente. O dataset CSV (109MB) é ignorado no Git/Docker
 por exceder o limite do GitHub — o modelo treinado já está versionado.
 
----
-
-## Resultados
-
-- **Acurácia de teste: ~71.5%** (Pipeline `StandardScaler` + `HistGradientBoostingClassifier`,
-  dataset completo, split 80/20).
-- **Modelo:** `model.pkl` (serializado com `joblib`).
-- **Avaliação:** acurácia em % (`accuracy_score`) no conjunto de teste.
-
-### Comparativo de acurácia (mesma pipeline, split 80/20)
-
-| Conjunto de features | Acurácia |
-|---|---|
-| Todos os dados (23 colunas originais) | **74.04%** |
-| Dados atuais (14 — sem dados sensíveis) | **71.46%** |
-
-A pequena perda (≈2.6pp) é o custo de remover colunas sensíveis (`sex`, `age`, medidas
-antropométricas e exames sensoriais), mantendo o sistema adequado e legal para uso em
-contratação de atletas.
-
-## Limitações e ética
-
-- Modelo **não é diagnóstico** médico e não deve ser usado como critério único de decisão;
-- Colunas sensíveis foram removidas para reduzir risco de discriminação (LGPD);
-- O sistema apoia a triagem/anamnese, cabendo a decisão final a profissionais capacitados.
