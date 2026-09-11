@@ -106,22 +106,3 @@ Na página há botões **"Teste rápido"** (perfil com/sem indício) que preench
 os 14 campos automaticamente. O dataset CSV (109MB) é ignorado no Git/Docker
 por exceder o limite do GitHub — o modelo treinado já está versionado.
 
----
-
-## Resultados
-
-- **Acurácia de teste: ~71.5%** (Pipeline `StandardScaler` + `HistGradientBoostingClassifier`,
-  dataset completo, split 80/20).
-- **Modelo:** `model.pkl` (serializado com `joblib`).
-- **Avaliação:** acurácia em % (`accuracy_score`) no conjunto de teste.
-
-### Comparativo de acurácia (mesma pipeline, split 80/20)
-
-| Conjunto de features | Acurácia |
-|---|---|
-| Todos os dados (23 colunas originais) | **74.04%** |
-| Dados atuais (14 — sem dados sensíveis) | **71.46%** |
-
-A pequena perda (≈2.6pp) é o custo de remover colunas sensíveis (`sex`, `age`, medidas
-antropométricas e exames sensoriais), mantendo o sistema adequado e legal para uso em
-contratação de atletas.
